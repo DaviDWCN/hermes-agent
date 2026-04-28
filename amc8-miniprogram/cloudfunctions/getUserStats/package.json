@@ -1,0 +1,9 @@
+{
+  "name": "getUserStats",
+  "version": "1.0.0",
+  "description": "Return aggregated stats and badges for the current user",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

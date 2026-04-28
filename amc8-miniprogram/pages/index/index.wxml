@@ -1,0 +1,83 @@
+<!--pages/index/index.wxml — Home Page-->
+<view class="page-container">
+
+  <!-- Hero Banner -->
+  <view class="hero-banner">
+    <view class="hero-logo">📐</view>
+    <view class="hero-title">AMC 8 助手</view>
+    <view class="hero-subtitle">免费 · 开源 · 多解法共享备考平台</view>
+  </view>
+
+  <!-- Stats Row -->
+  <view class="stats-row card">
+    <view class="stat-item">
+      <text class="stat-num">{{stats.totalQuestions || '500+'}}</text>
+      <text class="stat-label">道真题</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-num">{{stats.totalSolutions || '1000+'}}</text>
+      <text class="stat-label">条解法</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-num">2000+</text>
+      <text class="stat-label">年至今</text>
+    </view>
+  </view>
+
+  <!-- Quick Entries: Category -->
+  <view class="section-header mt-24">
+    <text class="text-h3">按题型浏览</text>
+  </view>
+  <view class="category-grid">
+    <view
+      class="category-card"
+      wx:for="{{categories}}"
+      wx:key="key"
+      data-cat="{{item.key}}"
+      bindtap="onCategoryTap"
+    >
+      <text class="category-icon">{{item.key === 'number_theory' ? '🔢' : item.key === 'algebra' ? '✏️' : item.key === 'geometry' ? '📐' : '🎲'}}</text>
+      <text class="category-name">{{item.label}}</text>
+    </view>
+  </view>
+
+  <!-- Quick Entries: Year -->
+  <view class="section-header mt-24">
+    <text class="text-h3">按年份浏览</text>
+  </view>
+  <scroll-view class="year-scroll" scroll-x>
+    <view class="year-row">
+      <view
+        class="year-chip"
+        wx:for="{{recentYears}}"
+        wx:key="*this"
+        data-year="{{item}}"
+        bindtap="onYearTap"
+      >
+        {{item}}
+      </view>
+      <view class="year-chip year-chip-more" bindtap="onBrowseAll">更多...</view>
+    </view>
+  </scroll-view>
+
+  <!-- Browse All Button -->
+  <view class="browse-btn-wrap mt-24">
+    <view class="btn btn-primary browse-all-btn" bindtap="onBrowseAll">
+      浏览全部题目 →
+    </view>
+  </view>
+
+  <!-- Footer links -->
+  <view class="footer mt-24">
+    <text class="footer-link" bindtap="onAboutTap">关于本小程序</text>
+    <text class="footer-sep">·</text>
+    <text class="footer-link" bindtap="onComplaintTap">版权投诉</text>
+  </view>
+
+  <view class="disclaimer">
+    题目版权归 MAA 所有，本小程序仅作学习参考用途。
+  </view>
+
+</view>

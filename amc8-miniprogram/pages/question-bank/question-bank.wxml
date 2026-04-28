@@ -1,0 +1,87 @@
+<!--pages/question-bank/question-bank.wxml-->
+<view class="page-wrap">
+
+  <!-- Filter Bar -->
+  <view class="filter-bar">
+
+    <!-- Year Picker -->
+    <picker
+      mode="selector"
+      range="{{years}}"
+      range-key="label"
+      bindchange="onYearChange"
+    >
+      <view class="filter-chip {{selectedYear ? 'filter-chip-active' : ''}}">
+        {{selectedYear || '全部年份'}} ▾
+      </view>
+    </picker>
+
+    <!-- Category chips -->
+    <scroll-view class="cat-scroll" scroll-x>
+      <view class="cat-row">
+        <view
+          class="filter-chip {{selectedCategory === item.key ? 'filter-chip-active' : ''}}"
+          wx:for="{{categories}}"
+          wx:key="key"
+          data-cat="{{item.key}}"
+          bindtap="onCategoryTap"
+        >
+          {{item.label}}
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- Language Toggle -->
+    <view class="lang-toggle" bindtap="onLangToggle">
+      {{language === 'cn' ? 'EN' : '中'}}
+    </view>
+
+  </view>
+
+  <!-- Question List -->
+  <block wx:if="{{questions.length > 0}}">
+    <view
+      class="q-card card-flat"
+      wx:for="{{questions}}"
+      wx:key="_id"
+      data-id="{{item._id}}"
+      bindtap="onQuestionTap"
+    >
+      <!-- Header row -->
+      <view class="q-header flex-between">
+        <view class="flex-start gap-8">
+          <text class="q-year-num">{{item.year}} #{{item.problem_number}}</text>
+          <text class="tag tag-primary" wx:for="{{item.category}}" wx:for-item="cat" wx:key="*this">
+            {{cat}}
+          </text>
+        </view>
+        <view class="difficulty-stars">{{item.difficulty}}★</view>
+      </view>
+      <!-- Content preview -->
+      <view class="q-preview math-content">
+        {{language === 'cn' ? item.content_cn : item.content_en}}
+      </view>
+      <!-- Footer -->
+      <view class="q-footer flex-between mt-8">
+        <text class="text-muted">查看解法 →</text>
+        <text class="answer-badge">答案: {{item.answer}}</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- Loading indicator -->
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <text>加载中…</text>
+  </view>
+
+  <!-- No more -->
+  <view class="no-more" wx:if="{{!hasMore && questions.length > 0}}">
+    —— 已加载全部题目 ——
+  </view>
+
+  <!-- Empty state -->
+  <view class="empty-state" wx:if="{{!loading && questions.length === 0}}">
+    <text>暂无题目，换个条件试试？</text>
+  </view>
+
+</view>

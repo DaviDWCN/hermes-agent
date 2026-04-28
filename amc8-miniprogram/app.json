@@ -1,0 +1,49 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/question-bank/question-bank",
+    "pages/question-detail/question-detail",
+    "pages/solution-hub/solution-hub",
+    "pages/submit-solution/submit-solution",
+    "pages/profile/profile",
+    "pages/error-book/error-book"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#1A2A48",
+    "navigationBarTitleText": "AMC 8 助手",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#FDFDFD"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#1A2A48",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tab-home.png",
+        "selectedIconPath": "images/tab-home-active.png"
+      },
+      {
+        "pagePath": "pages/question-bank/question-bank",
+        "text": "题库",
+        "iconPath": "images/tab-bank.png",
+        "selectedIconPath": "images/tab-bank-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/tab-profile.png",
+        "selectedIconPath": "images/tab-profile-active.png"
+      }
+    ]
+  },
+  "usingComponents": {},
+  "plugins": {},
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "darkmode": false
+}

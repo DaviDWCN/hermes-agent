@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "题目详情",
+  "usingComponents": {
+    "math-toolbar": "../../components/math-toolbar/math-toolbar"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "getQuestions",
+  "version": "1.0.0",
+  "description": "Fetch AMC 8 questions from cloud database",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

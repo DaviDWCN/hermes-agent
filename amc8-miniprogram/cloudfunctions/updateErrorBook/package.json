@@ -1,0 +1,9 @@
+{
+  "name": "updateErrorBook",
+  "version": "1.0.0",
+  "description": "Add or remove a question from the user error book",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

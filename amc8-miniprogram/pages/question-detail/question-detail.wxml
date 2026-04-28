@@ -1,0 +1,161 @@
+<!--pages/question-detail/question-detail.wxml-->
+<view class="page-wrap" wx:if="{{!loading && question}}">
+
+  <!-- Top toolbar -->
+  <view class="toolbar flex-between px-24 py-16">
+    <view class="tag tag-primary">
+      {{question.year}} AMC 8 · #{{question.problem_number}}
+    </view>
+    <view class="flex-start gap-16">
+      <view class="lang-btn" bindtap="onLangToggle">{{language === 'cn' ? 'EN' : '中文'}}</view>
+      <view
+        class="error-btn {{inErrorBook ? 'error-btn-active' : ''}}"
+        bindtap="onToggleErrorBook"
+      >📚</view>
+    </view>
+  </view>
+
+  <!-- Question Content -->
+  <view class="card question-card mx-24">
+    <view class="flex-start gap-8 mb-16">
+      <text class="tag tag-accent" wx:for="{{question.category}}" wx:for-item="cat" wx:key="*this">
+        {{cat}}
+      </text>
+      <text class="difficulty">难度：{{question.difficulty}}★</text>
+    </view>
+
+    <!-- LaTeX / text content (rendered by towxml in production) -->
+    <view class="math-content question-text">
+      {{language === 'cn' ? question.content_cn : question.content_en}}
+    </view>
+
+    <!-- Geometry image if present -->
+    <image
+      wx:if="{{question.image_url}}"
+      src="{{question.image_url}}"
+      mode="widthFix"
+      class="question-img"
+    />
+
+    <!-- Hint -->
+    <view class="hint-row mt-16" wx:if="{{question.hint}}">
+      <text class="hint-label">💡 提示：</text>
+      <text class="hint-text">{{language === 'cn' ? question.hint : question.hint_en}}</text>
+    </view>
+  </view>
+
+  <!-- Answer Options -->
+  <view class="options-section px-24 mt-16">
+    <view class="section-header"><text class="text-h3">选项</text></view>
+    <view
+      class="option-btn {{selectedOption === opt ? (isCorrect ? 'correct' : 'wrong') : ''}} {{answered && opt === question.answer && !isCorrect ? 'correct' : ''}}"
+      wx:for="{{['A','B','C','D','E']}}"
+      wx:key="*this"
+      wx:for-item="opt"
+      data-option="{{opt}}"
+      bindtap="onOptionTap"
+    >
+      <view class="option-letter">{{opt}}</view>
+      <text class="option-text math-content">{{question.options[opt]}}</text>
+    </view>
+  </view>
+
+  <!-- Result area after answering -->
+  <view class="result-area px-24 mt-8" wx:if="{{answered}}">
+    <view class="result-banner {{isCorrect ? 'result-correct' : 'result-wrong'}}">
+      <text>{{isCorrect ? '🎉 太棒了！答对啦！' : '💪 继续加油！正确答案是 ' + question.answer}}</text>
+    </view>
+
+    <!-- Official Solution toggle -->
+    <view class="toggle-solution btn btn-ghost mt-16" bindtap="onToggleOfficialSolution">
+      {{showOfficialSolution ? '▲ 收起官方解析' : '▼ 查看官方解析'}}
+    </view>
+
+    <view class="official-solution card mt-16" wx:if="{{showOfficialSolution}}">
+      <view class="section-header"><text class="text-h3">官方解析</text></view>
+      <view class="math-content solution-text">
+        {{language === 'cn' ? question.official_solution.text_cn : question.official_solution.text_en}}
+      </view>
+      <view class="method-tag mt-8">
+        <text class="tag tag-info">{{question.official_solution.method_tag}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Solution Hub -->
+  <view class="solution-hub px-24 mt-24">
+    <view class="section-header flex-between">
+      <text class="text-h3">智慧共享区</text>
+      <view class="sort-tabs">
+        <text
+          class="sort-tab {{solutionSort === 'votes' ? 'sort-tab-active' : ''}}"
+          data-sort="votes"
+          bindtap="onSortChange"
+        >最热</text>
+        <text
+          class="sort-tab {{solutionSort === 'latest' ? 'sort-tab-active' : ''}}"
+          data-sort="latest"
+          bindtap="onSortChange"
+        >最新</text>
+      </view>
+    </view>
+
+    <!-- Solution cards -->
+    <block wx:if="{{solutions.length > 0}}">
+      <view class="solution-card card-flat" wx:for="{{solutions}}" wx:key="_id">
+        <view class="sol-header flex-between">
+          <view class="flex-start gap-12">
+            <image class="sol-avatar" src="{{item.user_info.avatar_url}}" mode="aspectFill"/>
+            <view>
+              <text class="sol-name">{{item.user_info.nickname}}</text>
+              <text class="sol-time text-muted">{{item.timeLabel}}</text>
+            </view>
+          </view>
+          <view class="method-label tag tag-info">{{item.methodLabel}}</view>
+        </view>
+
+        <view class="math-content sol-text mt-12">{{item.text}}</view>
+
+        <!-- Solution images -->
+        <view class="sol-imgs mt-12" wx:if="{{item.img_list.length > 0}}">
+          <image
+            class="sol-img"
+            wx:for="{{item.img_list}}"
+            wx:key="*this"
+            wx:for-item="img"
+            src="{{img}}"
+            mode="aspectFit"
+          />
+        </view>
+
+        <!-- Vote button -->
+        <view class="sol-footer flex-between mt-12">
+          <view class="vote-btn {{item.voted ? 'vote-btn-active' : ''}}" data-id="{{item._id}}" bindtap="onVote">
+            👍 {{item.vote_count}}
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- Load more -->
+    <view class="load-more-btn btn btn-ghost mt-8" wx:if="{{solutionHasMore}}" bindtap="onLoadMoreSolutions">
+      加载更多解法
+    </view>
+
+    <!-- Empty solutions -->
+    <view class="empty-state" wx:if="{{!solutionsLoading && solutions.length === 0}}">
+      <text>还没有社区解法，来做第一个贡献者吧！</text>
+    </view>
+
+    <!-- Submit button -->
+    <view class="submit-sol-btn btn btn-accent mt-24" bindtap="onSubmitSolution">
+      ✏️ 分享我的解题思路
+    </view>
+  </view>
+
+</view>
+
+<!-- Loading -->
+<view class="loading-wrap" wx:if="{{loading}}">
+  <text>加载中…</text>
+</view>

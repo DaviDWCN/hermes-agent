@@ -1,0 +1,282 @@
+/* ==============================================
+   AMC 8 Assistant — Global Styles
+   Color Scheme: Academic Book-White + Math Deep-Blue
+   ============================================== */
+
+/* ---- CSS Variables ---- */
+page {
+  --color-primary: #1A2A48;
+  --color-primary-light: #2C4178;
+  --color-primary-pale: #E8EDF5;
+  --color-accent: #C8960A;       /* golden accent for highlights */
+  --color-bg: #FDFDFD;
+  --color-surface: #FFFFFF;
+  --color-border: #E0E4EC;
+  --color-text-primary: #1A2A48;
+  --color-text-secondary: #5A6A8A;
+  --color-text-muted: #9AA6BC;
+  --color-success: #2E7D52;
+  --color-error: #C0392B;
+  --color-warning: #E67E22;
+
+  /* Typography */
+  --font-serif: Georgia, "Computer Modern", serif;
+  --font-sans: -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Courier New", Courier, monospace;
+
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+/* ---- Reset ---- */
+* { box-sizing: border-box; }
+
+view, text, image {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---- Typography ---- */
+.text-h1 { font-size: 48rpx; font-weight: 700; color: var(--color-primary); }
+.text-h2 { font-size: 40rpx; font-weight: 600; color: var(--color-primary); }
+.text-h3 { font-size: 34rpx; font-weight: 600; color: var(--color-primary); }
+.text-body { font-size: 28rpx; color: var(--color-text-primary); }
+.text-small { font-size: 24rpx; color: var(--color-text-secondary); }
+.text-muted { font-size: 22rpx; color: var(--color-text-muted); }
+.text-accent { color: var(--color-accent); }
+.text-success { color: var(--color-success); }
+.text-error { color: var(--color-error); }
+.text-center { text-align: center; }
+.text-bold { font-weight: 700; }
+
+/* ---- Layout helpers ---- */
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.flex-start { display: flex; align-items: center; justify-content: flex-start; }
+.flex-1 { flex: 1; }
+.flex-wrap { flex-wrap: wrap; }
+.gap-8 { gap: 8rpx; }
+.gap-16 { gap: 16rpx; }
+.gap-24 { gap: 24rpx; }
+
+/* ---- Spacing ---- */
+.p-16 { padding: 16rpx; }
+.p-24 { padding: 24rpx; }
+.p-32 { padding: 32rpx; }
+.px-24 { padding-left: 24rpx; padding-right: 24rpx; }
+.py-16 { padding-top: 16rpx; padding-bottom: 16rpx; }
+.mt-8 { margin-top: 8rpx; }
+.mt-16 { margin-top: 16rpx; }
+.mt-24 { margin-top: 24rpx; }
+.mb-16 { margin-bottom: 16rpx; }
+.mb-24 { margin-bottom: 24rpx; }
+
+/* ---- Card ---- */
+.card {
+  background: var(--color-surface);
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(26, 42, 72, 0.08);
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.card-flat {
+  background: var(--color-surface);
+  border-radius: 12rpx;
+  border: 1rpx solid var(--color-border);
+  padding: 20rpx 24rpx;
+  margin-bottom: 16rpx;
+}
+
+/* ---- Buttons ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 32rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 2rpx solid var(--color-primary);
+}
+
+.btn-ghost {
+  background: var(--color-primary-pale);
+  color: var(--color-primary);
+}
+
+.btn-accent {
+  background: var(--color-accent);
+  color: #FFFFFF;
+}
+
+.btn-sm {
+  padding: 8rpx 20rpx;
+  font-size: 24rpx;
+  border-radius: 8rpx;
+}
+
+/* ---- Tags / Badges ---- */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 14rpx;
+  border-radius: 100rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.tag-primary {
+  background: var(--color-primary-pale);
+  color: var(--color-primary);
+}
+
+.tag-accent {
+  background: #FFF3CD;
+  color: #856404;
+}
+
+.tag-success {
+  background: #D4EDDA;
+  color: var(--color-success);
+}
+
+.tag-info {
+  background: #D1ECF1;
+  color: #0C5460;
+}
+
+/* ---- Answer Option ---- */
+.option-btn {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 24rpx;
+  background: var(--color-surface);
+  border: 2rpx solid var(--color-border);
+  border-radius: 12rpx;
+  margin-bottom: 16rpx;
+  transition: all 0.15s ease;
+}
+
+.option-btn.selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-pale);
+}
+
+.option-btn.correct {
+  border-color: var(--color-success);
+  background: #D4EDDA;
+}
+
+.option-btn.wrong {
+  border-color: var(--color-error);
+  background: #FDECEA;
+}
+
+.option-letter {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  background: var(--color-primary-pale);
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 26rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.option-btn.correct .option-letter { background: var(--color-success); color: #fff; }
+.option-btn.wrong .option-letter   { background: var(--color-error); color: #fff; }
+
+/* ---- Divider ---- */
+.divider {
+  height: 1rpx;
+  background: var(--color-border);
+  margin: 24rpx 0;
+}
+
+/* ---- Loading ---- */
+.loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 0;
+  color: var(--color-text-muted);
+  font-size: 26rpx;
+}
+
+/* ---- Empty state ---- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 40rpx;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.empty-state image {
+  width: 160rpx;
+  height: 160rpx;
+  margin-bottom: 24rpx;
+  opacity: 0.5;
+}
+
+/* ---- Section header ---- */
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.section-header::before {
+  content: '';
+  width: 6rpx;
+  height: 36rpx;
+  background: var(--color-primary);
+  border-radius: 3rpx;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+/* ---- Math content area ---- */
+.math-content {
+  font-family: var(--font-serif);
+  font-size: 30rpx;
+  line-height: 1.8;
+  color: var(--color-text-primary);
+}
+
+/* ---- Scroll containers ---- */
+.scroll-x {
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+.scroll-x::-webkit-scrollbar { display: none; }
+
+/* ---- Safe area ---- */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}

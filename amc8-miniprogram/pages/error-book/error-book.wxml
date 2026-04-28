@@ -1,0 +1,60 @@
+<!--pages/error-book/error-book.wxml-->
+<view class="page-wrap">
+
+  <!-- Toolbar -->
+  <view class="toolbar flex-between px-24 py-16">
+    <text class="text-body">共 {{questions.length}} 道错题</text>
+    <view class="flex-start gap-16">
+      <view class="lang-btn" bindtap="onLangToggle">{{language === 'cn' ? 'EN' : '中文'}}</view>
+      <view class="clear-btn" bindtap="onClearAll" wx:if="{{questions.length > 0}}">清空</view>
+    </view>
+  </view>
+
+  <!-- Loading -->
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <text>加载中…</text>
+  </view>
+
+  <!-- Question list -->
+  <block wx:if="{{!loading && questions.length > 0}}">
+    <view
+      class="error-card card-flat mx-24"
+      wx:for="{{questions}}"
+      wx:key="_id"
+    >
+      <!-- Header -->
+      <view class="flex-between">
+        <view class="flex-start gap-8">
+          <text class="q-id text-bold">{{item.year}} #{{item.problem_number}}</text>
+          <text class="tag tag-primary">{{item.categoryLabel}}</text>
+        </view>
+        <view class="remove-btn" data-id="{{item._id}}" bindtap="onRemove">✕</view>
+      </view>
+
+      <!-- Preview -->
+      <view
+        class="q-preview math-content mt-12"
+        data-id="{{item._id}}"
+        bindtap="onQuestionTap"
+      >
+        {{language === 'cn' ? item.content_cn : item.content_en}}
+      </view>
+
+      <!-- Footer -->
+      <view class="flex-between mt-12">
+        <text class="tag tag-accent">答案: {{item.answer}}</text>
+        <view class="see-sol btn btn-ghost btn-sm" data-id="{{item._id}}" bindtap="onQuestionTap">
+          查看解法 →
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- Empty state -->
+  <view class="empty-state" wx:if="{{!loading && questions.length === 0}}">
+    <text style="font-size:80rpx">📗</text>
+    <text class="mt-16">错题本是空的</text>
+    <text class="text-muted mt-8">答错题目后会自动记录到这里</text>
+  </view>
+
+</view>

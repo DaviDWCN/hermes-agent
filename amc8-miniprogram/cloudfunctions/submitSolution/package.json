@@ -1,0 +1,9 @@
+{
+  "name": "submitSolution",
+  "version": "1.0.0",
+  "description": "Submit a user solution with content safety check",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

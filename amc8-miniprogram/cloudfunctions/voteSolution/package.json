@@ -1,0 +1,9 @@
+{
+  "name": "voteSolution",
+  "version": "1.0.0",
+  "description": "Toggle upvote on a community solution",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

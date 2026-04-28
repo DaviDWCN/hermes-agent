@@ -1,0 +1,34 @@
+/* components/math-toolbar/math-toolbar.wxss */
+
+.toolbar-wrap {
+  background: #F4F6FB;
+  border-top: 1rpx solid #E0E4EC;
+  border-bottom: 1rpx solid #E0E4EC;
+  padding: 12rpx 0;
+  white-space: nowrap;
+}
+
+.toolbar-row {
+  display: inline-flex;
+  gap: 10rpx;
+  padding: 0 16rpx;
+}
+
+.toolbar-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rpx 18rpx;
+  background: #FFFFFF;
+  border: 1rpx solid #D0D8EC;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  font-family: 'Courier New', monospace;
+  color: #1A2A48;
+  white-space: nowrap;
+}
+
+.toolbar-chip:active {
+  background: #1A2A48;
+  color: #FFFFFF;
+}

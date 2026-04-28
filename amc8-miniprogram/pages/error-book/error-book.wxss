@@ -1,0 +1,56 @@
+/* pages/error-book/error-book.wxss */
+
+.page-wrap { background: var(--color-bg); min-height: 100vh; padding-bottom: 40rpx; }
+.mx-24 { margin-left: 24rpx; margin-right: 24rpx; }
+
+.toolbar {
+  background: var(--color-surface);
+  border-bottom: 1rpx solid var(--color-border);
+}
+
+.lang-btn {
+  font-size: 24rpx;
+  color: var(--color-primary);
+  font-weight: 600;
+  padding: 6rpx 16rpx;
+  background: var(--color-primary-pale);
+  border-radius: 8rpx;
+}
+
+.clear-btn {
+  font-size: 24rpx;
+  color: var(--color-error);
+  padding: 6rpx 16rpx;
+  background: #FDECEA;
+  border-radius: 8rpx;
+}
+
+/* Error card */
+.error-card {
+  margin-top: 16rpx;
+}
+
+.q-id { font-size: 28rpx; color: var(--color-primary); }
+
+.remove-btn {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F0F0F0;
+  border-radius: 50%;
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+}
+
+.q-preview {
+  font-size: 26rpx;
+  line-height: 1.7;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.see-sol {}

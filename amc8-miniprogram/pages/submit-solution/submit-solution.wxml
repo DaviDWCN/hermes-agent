@@ -1,0 +1,93 @@
+<!--pages/submit-solution/submit-solution.wxml-->
+<view class="page-wrap">
+
+  <!-- Question preview -->
+  <view class="card q-preview-card mx-24 mt-20" wx:if="{{question}}">
+    <view class="flex-between mb-8">
+      <text class="tag tag-primary">{{question.year}} AMC 8 · #{{question.problem_number}}</text>
+      <text class="tag tag-accent">答案: {{question.answer}}</text>
+    </view>
+    <view class="math-content q-preview-text">
+      {{language === 'cn' ? question.content_cn : question.content_en}}
+    </view>
+  </view>
+
+  <!-- Method Tag -->
+  <view class="section px-24 mt-24">
+    <view class="section-header"><text class="text-h3">解法类型</text></view>
+    <scroll-view scroll-x class="tag-scroll">
+      <view class="tag-row">
+        <view
+          class="method-chip {{selectedMethodTag === item.key ? 'method-chip-active' : ''}}"
+          wx:for="{{methodTags}}"
+          wx:key="key"
+          data-key="{{item.key}}"
+          bindtap="onMethodTagTap"
+        >
+          {{item.label}}
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- Math shortcut toolbar -->
+  <view class="section px-24 mt-16">
+    <view class="section-header"><text class="text-h3">数学符号快捷栏</text></view>
+    <scroll-view scroll-x class="shortcut-scroll">
+      <view class="shortcut-row">
+        <view
+          class="shortcut-chip"
+          wx:for="{{mathShortcuts}}"
+          wx:key="label"
+          data-tpl="{{item.template}}"
+          bindtap="onMathShortcutTap"
+        >
+          {{item.label}}
+        </view>
+      </view>
+    </scroll-view>
+    <text class="text-muted hint-note">点击插入 LaTeX 模板，如 \frac\{\}\{\} → $\frac{a}{b}$</text>
+  </view>
+
+  <!-- Text Input -->
+  <view class="section px-24 mt-16">
+    <view class="section-header flex-between">
+      <text class="text-h3">解题思路（支持 Markdown + LaTeX）</text>
+      <text class="text-muted">{{textLength}}/{{MAX_TEXT}}</text>
+    </view>
+    <textarea
+      class="solution-textarea"
+      placeholder="请输入你的解题思路…&#10;&#10;LaTeX 示例：行内公式用 $x^2+y^2=r^2$，块级公式用 $$\sum_{k=1}^{n} k = \frac{n(n+1)}{2}$$&#10;&#10;Markdown 支持 **粗体**、*斜体* 等"
+      maxlength="{{MAX_TEXT}}"
+      value="{{text}}"
+      bindinput="onTextInput"
+      auto-height
+    ></textarea>
+  </view>
+
+  <!-- Image Upload -->
+  <view class="section px-24 mt-16">
+    <view class="section-header"><text class="text-h3">上传手写解法图（可选）</text></view>
+    <view class="img-grid">
+      <view class="img-item" wx:for="{{imgList}}" wx:key="*this" wx:for-item="img">
+        <image src="{{img}}" mode="aspectFill" class="uploaded-img"/>
+        <view class="img-remove" data-idx="{{index}}" bindtap="onRemoveImage">✕</view>
+      </view>
+      <view class="img-add" bindtap="onChooseImage" wx:if="{{imgList.length < 3}}">
+        <text class="img-add-icon">+</text>
+        <text class="img-add-label">添加图片</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Submit -->
+  <view class="submit-area px-24 mt-32 safe-bottom">
+    <view class="btn btn-accent submit-btn {{submitting ? 'btn-disabled' : ''}}" bindtap="onSubmit">
+      {{submitting ? '提交中…' : '✅ 提交解法'}}
+    </view>
+    <text class="submit-note text-muted mt-8">
+      提交即表示同意共享协议（CC BY 4.0），内容须遵守微信使用规范。
+    </text>
+  </view>
+
+</view>

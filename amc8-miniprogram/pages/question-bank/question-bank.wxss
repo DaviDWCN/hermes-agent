@@ -1,0 +1,109 @@
+/* pages/question-bank/question-bank.wxss */
+
+.page-wrap {
+  background: var(--color-bg);
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+}
+
+/* Filter bar */
+.filter-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  gap: 12rpx;
+  border-bottom: 1rpx solid var(--color-border);
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: 10rpx 20rpx;
+  border-radius: 100rpx;
+  font-size: 24rpx;
+  background: var(--color-primary-pale);
+  color: var(--color-primary);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.filter-chip-active {
+  background: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.cat-scroll { flex: 1; overflow: hidden; }
+
+.cat-row {
+  display: inline-flex;
+  gap: 10rpx;
+  padding-right: 12rpx;
+}
+
+.lang-toggle {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Question Card */
+.q-card {
+  margin: 16rpx 24rpx 0;
+  padding: 24rpx;
+  cursor: pointer;
+}
+
+.q-card:active { background: var(--color-primary-pale); }
+
+.q-year-num {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.difficulty-stars {
+  font-size: 22rpx;
+  color: var(--color-accent);
+}
+
+.q-preview {
+  font-size: 26rpx;
+  color: var(--color-text-primary);
+  margin-top: 12rpx;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.q-footer {}
+
+.answer-badge {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--color-primary-pale);
+  padding: 4rpx 16rpx;
+  border-radius: 100rpx;
+}
+
+.no-more {
+  text-align: center;
+  padding: 32rpx 0;
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+}

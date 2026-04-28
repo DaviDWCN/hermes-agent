@@ -1,0 +1,119 @@
+/* pages/profile/profile.wxss */
+
+.page-wrap { background: var(--color-bg); padding-bottom: 60rpx; }
+.px-24 { padding-left: 24rpx; padding-right: 24rpx; }
+
+/* User header */
+.user-header {
+  background: linear-gradient(135deg, #1A2A48 0%, #2C4178 100%);
+  padding: 60rpx 40rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.user-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255,255,255,0.4);
+}
+
+.user-name {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.login-btn {
+  background: rgba(255,255,255,0.15);
+  color: #FFFFFF;
+  border: 2rpx solid rgba(255,255,255,0.4);
+  border-radius: 100rpx;
+  font-size: 28rpx;
+  padding: 16rpx 40rpx;
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16rpx;
+}
+
+.stat-card {
+  background: var(--color-surface);
+  border-radius: 16rpx;
+  border: 1rpx solid var(--color-border);
+  padding: 24rpx 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+  position: relative;
+}
+
+.stat-num { font-size: 44rpx; font-weight: 800; color: var(--color-primary); }
+.stat-label { font-size: 22rpx; color: var(--color-text-muted); }
+.stat-icon { position: absolute; top: 12rpx; right: 12rpx; font-size: 28rpx; opacity: 0.4; }
+
+/* Badges */
+.badge-list { display: flex; flex-wrap: wrap; gap: 16rpx; }
+
+.badge-item {
+  background: #FFFDE7;
+  border: 1rpx solid #F0D060;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+  width: calc(50% - 8rpx);
+}
+
+.badge-icon { font-size: 52rpx; }
+.badge-name { font-size: 26rpx; font-weight: 700; color: #5A4200; }
+.badge-desc { font-size: 20rpx; text-align: center; }
+
+.empty-badge-hint { padding: 24rpx; text-align: center; font-size: 26rpx; color: var(--color-text-secondary); }
+
+/* Shortcut row */
+.shortcut-row { display: flex; flex-direction: column; gap: 16rpx; }
+
+.shortcut-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.shortcut-icon { font-size: 44rpx; }
+.shortcut-title { font-size: 28rpx; font-weight: 600; color: var(--color-primary); display: block; }
+.shortcut-sub { font-size: 22rpx; display: block; }
+.shortcut-arrow { margin-left: auto; font-size: 40rpx; color: var(--color-text-muted); }
+
+/* My solutions */
+.my-sol-item { margin-bottom: 16rpx; }
+.sol-preview {
+  font-size: 26rpx;
+  color: var(--color-text-primary);
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-right: 16rpx;
+}
+.sol-votes { font-size: 24rpx; color: var(--color-accent); font-weight: 600; white-space: nowrap; }
+
+/* Share */
+.share-btn {
+  background: var(--color-primary-pale);
+  color: var(--color-primary);
+  border-radius: 100rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  padding: 20rpx 40rpx;
+  width: 100%;
+}

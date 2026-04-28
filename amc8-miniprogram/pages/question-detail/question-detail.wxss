@@ -1,0 +1,114 @@
+/* pages/question-detail/question-detail.wxss */
+
+.page-wrap { background: var(--color-bg); padding-bottom: 60rpx; }
+
+/* Toolbar */
+.toolbar { background: var(--color-surface); border-bottom: 1rpx solid var(--color-border); }
+
+.lang-btn {
+  font-size: 24rpx;
+  color: var(--color-primary);
+  font-weight: 600;
+  padding: 6rpx 16rpx;
+  background: var(--color-primary-pale);
+  border-radius: 8rpx;
+}
+
+.error-btn {
+  font-size: 36rpx;
+  opacity: 0.5;
+}
+
+.error-btn-active { opacity: 1; }
+
+/* Question card */
+.mx-24 { margin-left: 24rpx; margin-right: 24rpx; }
+
+.question-card { margin-top: 20rpx; }
+
+.question-text { font-size: 30rpx; line-height: 1.9; }
+
+.question-img {
+  width: 100%;
+  border-radius: 8rpx;
+  margin-top: 16rpx;
+}
+
+.difficulty { font-size: 24rpx; color: var(--color-accent); }
+
+.hint-row { background: #FFFDE7; border-radius: 10rpx; padding: 16rpx; }
+.hint-label { font-size: 24rpx; font-weight: 700; color: #856404; }
+.hint-text { font-size: 24rpx; color: #856404; margin-top: 4rpx; }
+
+/* Options */
+.options-section { padding-bottom: 8rpx; }
+.option-text { flex: 1; font-size: 28rpx; }
+
+/* Result */
+.result-banner {
+  padding: 20rpx 24rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  text-align: center;
+}
+.result-correct { background: #D4EDDA; color: var(--color-success); }
+.result-wrong   { background: #FDECEA; color: var(--color-error); }
+
+.toggle-solution { width: 100%; font-size: 26rpx; }
+
+.official-solution {}
+.solution-text { font-size: 26rpx; line-height: 1.9; }
+
+/* Solution Hub */
+.sort-tabs { display: flex; gap: 8rpx; }
+.sort-tab {
+  font-size: 24rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 100rpx;
+  color: var(--color-text-secondary);
+}
+.sort-tab-active {
+  background: var(--color-primary);
+  color: #FFFFFF;
+}
+
+/* Solution Card */
+.solution-card { margin-bottom: 20rpx; }
+
+.sol-avatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: var(--color-border);
+}
+
+.sol-name { font-size: 26rpx; font-weight: 600; display: block; }
+.sol-time { font-size: 22rpx; display: block; }
+
+.method-label { font-size: 20rpx; }
+
+.sol-text { font-size: 26rpx; line-height: 1.8; }
+
+.sol-imgs { display: flex; flex-wrap: wrap; gap: 8rpx; }
+.sol-img { width: 180rpx; height: 180rpx; border-radius: 8rpx; object-fit: cover; }
+
+.vote-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  background: var(--color-primary-pale);
+  padding: 8rpx 20rpx;
+  border-radius: 100rpx;
+}
+
+.vote-btn-active {
+  background: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.load-more-btn { width: 100%; font-size: 26rpx; }
+
+.submit-sol-btn { width: 100%; font-size: 28rpx; padding: 24rpx; border-radius: 16rpx; }

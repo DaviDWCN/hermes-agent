@@ -1,0 +1,90 @@
+<!--pages/profile/profile.wxml-->
+<view class="page-wrap">
+
+  <!-- User Header -->
+  <view class="user-header">
+    <block wx:if="{{hasUserInfo}}">
+      <image class="user-avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"/>
+      <text class="user-name">{{userInfo.nickName}}</text>
+    </block>
+    <block wx:else>
+      <button class="login-btn" open-type="getUserInfo" bindgetuserinfo="onGetUserInfo">
+        登录查看个人数据
+      </button>
+    </block>
+  </view>
+
+  <!-- Stats Cards -->
+  <view class="stats-grid px-24 mt-16">
+    <view class="stat-card" bindtap="onGoErrorBook">
+      <text class="stat-num">{{stats.errorBookCount}}</text>
+      <text class="stat-label">错题</text>
+      <text class="stat-icon">📚</text>
+    </view>
+    <view class="stat-card">
+      <text class="stat-num">{{stats.totalSolutions}}</text>
+      <text class="stat-label">条解法</text>
+      <text class="stat-icon">✏️</text>
+    </view>
+    <view class="stat-card">
+      <text class="stat-num">{{stats.totalVotes}}</text>
+      <text class="stat-label">获赞</text>
+      <text class="stat-icon">👍</text>
+    </view>
+  </view>
+
+  <!-- Badges -->
+  <view class="section px-24 mt-24" wx:if="{{stats.badges.length > 0}}">
+    <view class="section-header"><text class="text-h3">我的成就</text></view>
+    <view class="badge-list">
+      <view class="badge-item" wx:for="{{stats.badges}}" wx:key="id">
+        <text class="badge-icon">{{badgeIcons[item.id] || '🏅'}}</text>
+        <text class="badge-name">{{item.name}}</text>
+        <text class="badge-desc text-muted">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Empty badges -->
+  <view class="section px-24 mt-24" wx:if="{{stats.badges.length === 0 && hasUserInfo}}">
+    <view class="section-header"><text class="text-h3">我的成就</text></view>
+    <view class="empty-badge-hint card-flat">
+      <text>🎯 贡献解法即可解锁成就勋章！</text>
+    </view>
+  </view>
+
+  <!-- Error Book shortcut -->
+  <view class="shortcut-row px-24 mt-24">
+    <view class="shortcut-item card-flat" bindtap="onGoErrorBook">
+      <text class="shortcut-icon">📚</text>
+      <view>
+        <text class="shortcut-title">错题本</text>
+        <text class="shortcut-sub text-muted">共 {{stats.errorBookCount}} 道题</text>
+      </view>
+      <text class="shortcut-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- My Solutions -->
+  <view class="section px-24 mt-24" wx:if="{{mySolutions.length > 0}}">
+    <view class="section-header"><text class="text-h3">我的解法贡献</text></view>
+    <view
+      class="my-sol-item card-flat"
+      wx:for="{{mySolutions}}"
+      wx:key="_id"
+      data-qid="{{item.q_id}}"
+      bindtap="onSolutionTap"
+    >
+      <view class="flex-between">
+        <text class="sol-preview">{{item.text}}</text>
+        <text class="sol-votes">👍 {{item.vote_count}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Share button -->
+  <view class="share-wrap px-24 mt-32">
+    <button class="share-btn" open-type="share">📤 推荐给同学</button>
+  </view>
+
+</view>

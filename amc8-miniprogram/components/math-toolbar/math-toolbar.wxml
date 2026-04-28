@@ -1,0 +1,14 @@
+<!--components/math-toolbar/math-toolbar.wxml-->
+<scroll-view class="toolbar-wrap" scroll-x>
+  <view class="toolbar-row">
+    <view
+      class="toolbar-chip"
+      wx:for="{{shortcuts}}"
+      wx:key="label"
+      data-tpl="{{item.template}}"
+      bindtap="onInsert"
+    >
+      {{item.label}}
+    </view>
+  </view>
+</scroll-view>
