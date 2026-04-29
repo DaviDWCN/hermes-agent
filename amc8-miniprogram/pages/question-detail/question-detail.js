@@ -135,7 +135,16 @@ Page({
   onLangToggle() {
     const lang = this.data.language === 'cn' ? 'en' : 'cn';
     app.switchLanguage(lang);
-    this.setData({ language: lang });
+    const q = this.data.question;
+    if (q) {
+      // Re-compute category labels for the new language
+      this.setData({
+        language: lang,
+        'question.categoryLabels': (q.category || []).map(c => getCategoryLabel(c, lang)),
+      });
+    } else {
+      this.setData({ language: lang });
+    }
   },
 
   onSortChange(e) {

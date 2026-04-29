@@ -55,7 +55,7 @@ Page({
         if (stats) {
           app.globalData.userStats = stats;
           this.setData({ stats, loading: false });
-          this._loadMySolutions(stats.openid);
+          this._loadMySolutions();
         } else {
           this.setData({ loading: false });
         }
@@ -64,10 +64,11 @@ Page({
     });
   },
 
-  _loadMySolutions(openid) {
+  _loadMySolutions() {
+    // The default client-side SDK security rule ("only my docs") filters
+    // user_solutions to the current user's records automatically via _openid.
     const db = wx.cloud.database();
     db.collection('user_solutions')
-      .where({ 'user_info.openid': openid })
       .orderBy('created_at', 'desc')
       .limit(10)
       .get()

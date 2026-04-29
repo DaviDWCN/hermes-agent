@@ -46,7 +46,6 @@ exports.main = async (event, context) => {
   return {
     code: 0,
     userStats: {
-      openid,
       totalSolutions,
       totalVotes,
       errorBookCount,
