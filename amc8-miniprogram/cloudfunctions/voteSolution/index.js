@@ -11,7 +11,9 @@ exports.main = async (event, context) => {
   const openid = wxContext.OPENID;
   const { solutionId } = event;
 
-  if (!solutionId) return { code: 400, message: '缺少 solutionId' };
+  if (!solutionId || typeof solutionId !== 'string' || solutionId.length > 64) {
+    return { code: 400, message: '缺少或无效的 solutionId' };
+  }
 
   const votesCol = db.collection('votes');
 

@@ -85,15 +85,16 @@ Page({
   },
 
   _checkErrorBook(id) {
-    const db = wx.cloud.database();
-    db.collection('error_book')
-      .where({ question_id: id })
-      .limit(1)
-      .get()
-      .then(res => {
-        this.setData({ inErrorBook: res.data.length > 0 });
-      })
-      .catch(() => {});
+    wx.cloud.callFunction({
+      name: 'checkErrorBook',
+      data: { questionId: id },
+      success: res => {
+        if (res.result && res.result.code === 0) {
+          this.setData({ inErrorBook: res.result.inBook });
+        }
+      },
+      fail: () => {},
+    });
   },
 
   onOptionTap(e) {

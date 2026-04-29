@@ -38,6 +38,12 @@ exports.main = async (event, context) => {
   if (!Array.isArray(imgList) || imgList.length > MAX_IMAGES) {
     return { code: 400, message: `最多上传 ${MAX_IMAGES} 张图片` };
   }
+  // Validate that all image entries are cloud storage fileIDs
+  for (const fileId of imgList) {
+    if (typeof fileId !== 'string' || !fileId.startsWith('cloud://') || fileId.length > 256) {
+      return { code: 400, message: '图片链接格式无效' };
+    }
+  }
   if (!VALID_METHOD_TAGS.has(methodTag)) {
     return { code: 400, message: '无效的解题方法标签' };
   }
