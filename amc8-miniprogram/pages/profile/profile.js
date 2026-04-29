@@ -35,11 +35,14 @@ Page({
     }
   },
 
-  onGetUserInfo(e) {
-    if (e.detail.userInfo) {
-      app.globalData.userInfo = e.detail.userInfo;
-      this.setData({ userInfo: e.detail.userInfo, hasUserInfo: true });
-    }
+  onLoginTap() {
+    wx.getUserProfile({
+      desc: '用于展示个人头像和昵称',
+      success: res => {
+        app.globalData.userInfo = res.userInfo;
+        this.setData({ userInfo: res.userInfo, hasUserInfo: true });
+      },
+    });
   },
 
   _loadStats() {
@@ -48,11 +51,13 @@ Page({
       name: 'getUserStats',
       data: {},
       success: res => {
-        if (res.result.code === 0) {
-          const stats = res.result.userStats;
+        const stats = res.result && res.result.code === 0 ? res.result.userStats : null;
+        if (stats) {
           app.globalData.userStats = stats;
           this.setData({ stats, loading: false });
           this._loadMySolutions(stats.openid);
+        } else {
+          this.setData({ loading: false });
         }
       },
       fail: () => this.setData({ loading: false }),

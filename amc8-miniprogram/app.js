@@ -4,20 +4,18 @@ App({
     // Initialize cloud development
     if (!wx.cloud) {
       console.error('Please use WeChat base library 2.2.3 or above for cloud development.');
-    } else {
-      wx.cloud.init({
-        env: 'amc8-assistant-prod', // Replace with your Cloud Environment ID
-        traceUser: true,
-      });
+      return;
     }
 
-    // Sync user profile from cloud
-    this.globalData.userInfo = null;
+    wx.cloud.init({
+      env: 'amc8-assistant-prod', // Replace with your Cloud Environment ID
+      traceUser: true,
+    });
+
     this._initUserSession();
   },
 
   _initUserSession() {
-    const db = wx.cloud.database();
     wx.cloud.callFunction({
       name: 'getUserStats',
       data: {},
@@ -28,7 +26,7 @@ App({
       },
       fail: err => {
         console.warn('getUserStats failed (first launch is expected):', err);
-      }
+      },
     });
   },
 
@@ -38,7 +36,7 @@ App({
       totalSolutions: 0,
       totalVotes: 0,
       errorBookCount: 0,
-      badges: []
+      badges: [],
     },
     // Active language: 'en' | 'cn'
     language: 'cn',

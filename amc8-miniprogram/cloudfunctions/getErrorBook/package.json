@@ -1,0 +1,9 @@
+{
+  "name": "getErrorBook",
+  "version": "1.0.0",
+  "description": "Fetch current user's error book entries with question details",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

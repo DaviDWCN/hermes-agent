@@ -8,7 +8,7 @@
       <text class="user-name">{{userInfo.nickName}}</text>
     </block>
     <block wx:else>
-      <button class="login-btn" open-type="getUserInfo" bindgetuserinfo="onGetUserInfo">
+      <button class="login-btn" bindtap="onLoginTap">
         登录查看个人数据
       </button>
     </block>

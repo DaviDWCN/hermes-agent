@@ -1,43 +1,34 @@
 // pages/index/index.js — Home Page
 const app = getApp();
-const { getCategoryLabel, CATEGORY_LABELS } = require('../../utils/util');
+const { CATEGORY_LABELS } = require('../../utils/util');
+
+const CATEGORY_ICONS = {
+  number_theory:        '🔢',
+  algebra:              '✏️',
+  geometry:             '📐',
+  combinatorics:        '🎲',
+  counting_probability: '📊',
+};
 
 Page({
   data: {
-    userInfo: null,
-    hasUserInfo: false,
     language: 'cn',
     categories: Object.keys(CATEGORY_LABELS).map(k => ({
       key: k,
       label: CATEGORY_LABELS[k],
+      icon: CATEGORY_ICONS[k] || '📖',
     })),
     recentYears: [2023, 2022, 2021, 2020, 2019],
-    stats: { totalQuestions: 0, totalSolutions: 0, totalUsers: 0 },
+    stats: { totalQuestions: 0, totalSolutions: 0 },
   },
 
   onLoad() {
     this.setData({ language: app.globalData.language });
     this._loadStats();
-    this._getUserInfo();
   },
 
   onShow() {
     this.setData({ language: app.globalData.language });
-  },
-
-  _getUserInfo() {
-    wx.getSetting({
-      success: res => {
-        if (res.authSetting['scope.userInfo']) {
-          wx.getUserInfo({
-            success: result => {
-              app.globalData.userInfo = result.userInfo;
-              this.setData({ userInfo: result.userInfo, hasUserInfo: true });
-            },
-          });
-        }
-      },
-    });
   },
 
   _loadStats() {

@@ -29,6 +29,7 @@ Page({
     const { id } = options;
     if (!id) { wx.navigateBack(); return; }
     this._questionId = id;
+    this._voting = false;
     this.setData({ language: app.globalData.language });
     this._loadQuestion(id);
     this._checkErrorBook(id);
@@ -132,7 +133,9 @@ Page({
   },
 
   onVote(e) {
+    if (this._voting) return;
     const solutionId = e.currentTarget.dataset.id;
+    this._voting = true;
     wx.cloud.callFunction({
       name: 'voteSolution',
       data: { solutionId },
@@ -152,6 +155,7 @@ Page({
         this.setData({ solutions });
       },
       fail: () => showToast('点赞失败，请重试'),
+      complete: () => { this._voting = false; },
     });
   },
 

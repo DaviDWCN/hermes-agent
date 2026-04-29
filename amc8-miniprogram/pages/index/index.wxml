@@ -38,7 +38,7 @@
       data-cat="{{item.key}}"
       bindtap="onCategoryTap"
     >
-      <text class="category-icon">{{item.key === 'number_theory' ? '🔢' : item.key === 'algebra' ? '✏️' : item.key === 'geometry' ? '📐' : '🎲'}}</text>
+      <text class="category-icon">{{item.icon}}</text>
       <text class="category-name">{{item.label}}</text>
     </view>
   </view>

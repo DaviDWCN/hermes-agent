@@ -68,6 +68,9 @@ Page({
         this.setData({ loading: false });
         wx.showToast({ title: '加载失败，请重试', icon: 'none' });
       },
+      complete: () => {
+        wx.stopPullDownRefresh();
+      },
     });
   },
 
@@ -100,6 +103,6 @@ Page({
 
   onPullDownRefresh() {
     this._loadQuestions(true);
-    wx.stopPullDownRefresh();
+    // stopPullDownRefresh is called in _loadQuestions complete callback
   },
 });
