@@ -4,7 +4,7 @@
 const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
-const _ = db.command;
+const $ = db.command.aggregate;
 
 const BADGES = [
   { id: 'solver_10',    name: '解题新星',   desc: '累计分享10条解法', threshold: 10, field: 'totalSolutions' },
@@ -19,21 +19,24 @@ exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext();
   const openid = wxContext.OPENID;
 
-  // Count solutions by this user
-  const [solutionsRes, errorBookRes] = await Promise.all([
-    db.collection('user_solutions').where({ 'user_info.openid': openid }).count(),
+  // Use aggregation to count solutions and sum votes in one pass,
+  // avoiding the 100-record limit of .get() for vote summation.
+  const [aggRes, errorBookRes] = await Promise.all([
+    db.collection('user_solutions')
+      .aggregate()
+      .match({ 'user_info.openid': openid })
+      .group({
+        _id: null,
+        totalSolutions: $.sum(1),
+        totalVotes: $.sum('$vote_count'),
+      })
+      .end(),
     db.collection('error_book').where({ openid }).count(),
   ]);
 
-  // Sum vote_count across user's solutions
-  const userSolutions = await db
-    .collection('user_solutions')
-    .where({ 'user_info.openid': openid })
-    .field({ vote_count: true })
-    .get();
-
-  const totalVotes = userSolutions.data.reduce((acc, s) => acc + (s.vote_count || 0), 0);
-  const totalSolutions = solutionsRes.total;
+  const agg = aggRes.list[0] || { totalSolutions: 0, totalVotes: 0 };
+  const totalSolutions = agg.totalSolutions || 0;
+  const totalVotes = Math.max(0, agg.totalVotes || 0);
   const errorBookCount = errorBookRes.total;
 
   // Compute earned badges
@@ -43,7 +46,6 @@ exports.main = async (event, context) => {
   return {
     code: 0,
     userStats: {
-      openid,
       totalSolutions,
       totalVotes,
       errorBookCount,

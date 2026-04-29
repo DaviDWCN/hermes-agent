@@ -3,7 +3,6 @@
     "pages/index/index",
     "pages/question-bank/question-bank",
     "pages/question-detail/question-detail",
-    "pages/solution-hub/solution-hub",
     "pages/submit-solution/submit-solution",
     "pages/profile/profile",
     "pages/error-book/error-book"

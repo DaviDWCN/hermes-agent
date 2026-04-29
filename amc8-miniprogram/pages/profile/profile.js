@@ -35,11 +35,14 @@ Page({
     }
   },
 
-  onGetUserInfo(e) {
-    if (e.detail.userInfo) {
-      app.globalData.userInfo = e.detail.userInfo;
-      this.setData({ userInfo: e.detail.userInfo, hasUserInfo: true });
-    }
+  onLoginTap() {
+    wx.getUserProfile({
+      desc: '用于展示个人头像和昵称',
+      success: res => {
+        app.globalData.userInfo = res.userInfo;
+        this.setData({ userInfo: res.userInfo, hasUserInfo: true });
+      },
+    });
   },
 
   _loadStats() {
@@ -48,21 +51,24 @@ Page({
       name: 'getUserStats',
       data: {},
       success: res => {
-        if (res.result.code === 0) {
-          const stats = res.result.userStats;
+        const stats = res.result && res.result.code === 0 ? res.result.userStats : null;
+        if (stats) {
           app.globalData.userStats = stats;
           this.setData({ stats, loading: false });
-          this._loadMySolutions(stats.openid);
+          this._loadMySolutions();
+        } else {
+          this.setData({ loading: false });
         }
       },
       fail: () => this.setData({ loading: false }),
     });
   },
 
-  _loadMySolutions(openid) {
+  _loadMySolutions() {
+    // The default client-side SDK security rule ("only my docs") filters
+    // user_solutions to the current user's records automatically via _openid.
     const db = wx.cloud.database();
     db.collection('user_solutions')
-      .where({ 'user_info.openid': openid })
       .orderBy('created_at', 'desc')
       .limit(10)
       .get()

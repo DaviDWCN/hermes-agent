@@ -1,5 +1,6 @@
 // Cloud Function: voteSolution
-// Toggle an upvote on a solution. Prevents duplicate votes.
+// Toggle an upvote on a solution. Uses a compound document ID (openid_solutionId)
+// to make the vote record idempotent and prevent duplicates under concurrent calls.
 
 const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
@@ -11,27 +12,33 @@ exports.main = async (event, context) => {
   const openid = wxContext.OPENID;
   const { solutionId } = event;
 
-  if (!solutionId) return { code: 400, message: '缺少 solutionId' };
+  if (!solutionId || typeof solutionId !== 'string' || solutionId.length > 64) {
+    return { code: 400, message: '缺少或无效的 solutionId' };
+  }
 
-  const votesCol = db.collection('votes');
-
-  // Check if user already voted
-  const existing = await votesCol
-    .where({ solution_id: solutionId, openid })
-    .limit(1)
-    .get();
-
+  // Compound document ID ensures uniqueness; .add() with a pre-defined _id throws
+  // DUPLICATE_KEY when the record already exists, letting us toggle off reliably.
+  const voteDocId  = `${openid}_${solutionId}`;
+  const votesCol  = db.collection('votes');
   const solutionRef = db.collection('user_solutions').doc(solutionId);
 
-  if (existing.data.length > 0) {
-    // Already voted → remove vote (toggle off)
-    await votesCol.doc(existing.data[0]._id).remove();
-    await solutionRef.update({ data: { vote_count: _.inc(-1) } });
-    return { code: 0, action: 'unvoted' };
-  } else {
-    // New vote → add record and increment counter
-    await votesCol.add({ data: { solution_id: solutionId, openid, created_at: new Date() } });
+  try {
+    // Attempt to add with a compound _id; throws DUPLICATE_KEY if record exists
+    await votesCol.add({
+      data: { _id: voteDocId, solution_id: solutionId, openid, created_at: new Date() },
+    });
+    // Record was missing → new vote
     await solutionRef.update({ data: { vote_count: _.inc(1) } });
     return { code: 0, action: 'voted' };
+  } catch (err) {
+    // Document already exists → toggle off (remove vote)
+    try {
+      await votesCol.doc(voteDocId).remove();
+      await solutionRef.update({ data: { vote_count: _.inc(-1) } });
+      return { code: 0, action: 'unvoted' };
+    } catch (removeErr) {
+      console.error('voteSolution remove error:', removeErr);
+      return { code: 500, message: '操作失败，请重试' };
+    }
   }
 };

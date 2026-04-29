@@ -1,6 +1,6 @@
 // pages/question-detail/question-detail.js
 const app = getApp();
-const { getCategoryLabel, getMethodLabel, timeAgo, vibrateCorrect, vibrateWrong, showToast } = require('../../utils/util');
+const { getCategoryLabel, getMethodLabel, getDifficultyLabel, timeAgo, vibrateCorrect, vibrateWrong, showToast } = require('../../utils/util');
 
 Page({
   data: {
@@ -29,6 +29,7 @@ Page({
     const { id } = options;
     if (!id) { wx.navigateBack(); return; }
     this._questionId = id;
+    this._voting = false;
     this.setData({ language: app.globalData.language });
     this._loadQuestion(id);
     this._checkErrorBook(id);
@@ -40,8 +41,20 @@ Page({
       name: 'getQuestions',
       data: { questionId: id },
       success: res => {
-        const q = res.result.question;
-        this.setData({ question: q, loading: false });
+        const q = res.result && res.result.question;
+        if (!q) {
+          this.setData({ loading: false });
+          wx.showToast({ title: '题目不存在', icon: 'none' });
+          setTimeout(() => wx.navigateBack(), 1500);
+          return;
+        }
+        const lang = this.data.language;
+        const enriched = {
+          ...q,
+          categoryLabels: (q.category || []).map(c => getCategoryLabel(c, lang)),
+          difficultyLabel: getDifficultyLabel(q.difficulty),
+        };
+        this.setData({ question: enriched, loading: false });
         wx.setNavigationBarTitle({ title: `${q.year} AMC 8 #${q.problem_number}` });
         this._loadSolutions(true);
       },
@@ -69,6 +82,7 @@ Page({
       .then(res => {
         const incoming = res.data.map(s => ({
           ...s,
+          img_list: s.img_list || [],
           timeLabel: timeAgo(s.created_at),
           methodLabel: getMethodLabel(s.method_tag),
         }));
@@ -84,15 +98,16 @@ Page({
   },
 
   _checkErrorBook(id) {
-    const db = wx.cloud.database();
-    db.collection('error_book')
-      .where({ question_id: id })
-      .limit(1)
-      .get()
-      .then(res => {
-        this.setData({ inErrorBook: res.data.length > 0 });
-      })
-      .catch(() => {});
+    wx.cloud.callFunction({
+      name: 'checkErrorBook',
+      data: { questionId: id },
+      success: res => {
+        if (res.result && res.result.code === 0) {
+          this.setData({ inErrorBook: res.result.inBook });
+        }
+      },
+      fail: () => {},
+    });
   },
 
   onOptionTap(e) {
@@ -121,7 +136,16 @@ Page({
   onLangToggle() {
     const lang = this.data.language === 'cn' ? 'en' : 'cn';
     app.switchLanguage(lang);
-    this.setData({ language: lang });
+    const q = this.data.question;
+    if (q) {
+      // Re-compute category labels for the new language
+      this.setData({
+        language: lang,
+        'question.categoryLabels': (q.category || []).map(c => getCategoryLabel(c, lang)),
+      });
+    } else {
+      this.setData({ language: lang });
+    }
   },
 
   onSortChange(e) {
@@ -132,13 +156,19 @@ Page({
   },
 
   onVote(e) {
+    if (this._voting) return;
     const solutionId = e.currentTarget.dataset.id;
+    this._voting = true;
     wx.cloud.callFunction({
       name: 'voteSolution',
       data: { solutionId },
       success: res => {
+        if (!res.result || res.result.code !== 0) {
+          showToast('点赞失败，请重试');
+          return;
+        }
         const { action } = res.result;
-        // Update local vote count optimistically
+        // Apply optimistic update only on confirmed success
         const solutions = this.data.solutions.map(s => {
           if (s._id === solutionId) {
             return {
@@ -152,6 +182,7 @@ Page({
         this.setData({ solutions });
       },
       fail: () => showToast('点赞失败，请重试'),
+      complete: () => { this._voting = false; },
     });
   },
 

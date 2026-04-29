@@ -1,0 +1,9 @@
+{
+  "name": "clearErrorBook",
+  "version": "1.0.0",
+  "description": "Clear all error book entries for the current user",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

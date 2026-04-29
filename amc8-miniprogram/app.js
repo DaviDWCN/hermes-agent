@@ -4,20 +4,28 @@ App({
     // Initialize cloud development
     if (!wx.cloud) {
       console.error('Please use WeChat base library 2.2.3 or above for cloud development.');
-    } else {
-      wx.cloud.init({
-        env: 'amc8-assistant-prod', // Replace with your Cloud Environment ID
-        traceUser: true,
-      });
+      return;
     }
 
-    // Sync user profile from cloud
-    this.globalData.userInfo = null;
+    wx.cloud.init({
+      env: 'amc8-assistant-prod', // Replace with your Cloud Environment ID
+      traceUser: true,
+    });
+
+    // Restore language preference from local storage
+    try {
+      const saved = wx.getStorageSync('lang');
+      if (saved === 'en' || saved === 'cn') {
+        this.globalData.language = saved;
+      }
+    } catch (e) {
+      console.warn('Failed to restore language preference:', e);
+    }
+
     this._initUserSession();
   },
 
   _initUserSession() {
-    const db = wx.cloud.database();
     wx.cloud.callFunction({
       name: 'getUserStats',
       data: {},
@@ -28,7 +36,7 @@ App({
       },
       fail: err => {
         console.warn('getUserStats failed (first launch is expected):', err);
-      }
+      },
     });
   },
 
@@ -38,7 +46,7 @@ App({
       totalSolutions: 0,
       totalVotes: 0,
       errorBookCount: 0,
-      badges: []
+      badges: [],
     },
     // Active language: 'en' | 'cn'
     language: 'cn',
@@ -48,9 +56,10 @@ App({
     selectedCategory: null,
   },
 
-  // Helper: switch language globally and broadcast event
+  // Helper: switch language globally and persist to storage
   switchLanguage(lang) {
     this.globalData.language = lang;
+    try { wx.setStorageSync('lang', lang); } catch (_) {}
     // Pages listen to this via onShow or custom event bus
   },
 });

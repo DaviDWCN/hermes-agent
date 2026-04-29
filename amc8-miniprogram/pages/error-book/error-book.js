@@ -18,45 +18,28 @@ Page({
     this._loadErrorBook();
   },
 
-  async _loadErrorBook() {
+  _loadErrorBook() {
     this.setData({ loading: true });
-    const db = wx.cloud.database();
-    try {
-      // Get error book entries
-      const ebRes = await db.collection('error_book')
-        .orderBy('added_at', 'desc')
-        .get();
-
-      if (ebRes.data.length === 0) {
-        this.setData({ questions: [], loading: false });
-        return;
-      }
-
-      const qIds = ebRes.data.map(e => e.question_id);
-
-      // Fetch question details (batch, up to 20)
-      const questions = [];
-      for (let i = 0; i < qIds.length; i += 20) {
-        const batch = qIds.slice(i, i + 20);
-        const qRes = await db.collection('questions')
-          .where({ _id: db.command.in(batch) })
-          .get();
-        questions.push(...qRes.data);
-      }
-
-      // Maintain error-book order
-      const qMap = {};
-      questions.forEach(q => { qMap[q._id] = q; });
-      const ordered = ebRes.data
-        .map(e => qMap[e.question_id])
-        .filter(Boolean)
-        .map(q => ({ ...q, categoryLabel: getCategoryLabel(q.category?.[0] || '', this.data.language) }));
-
-      this.setData({ questions: ordered, loading: false });
-    } catch (err) {
-      console.error(err);
-      this.setData({ loading: false });
-    }
+    const lang = this.data.language;
+    wx.cloud.callFunction({
+      name: 'getErrorBook',
+      data: {},
+      success: res => {
+        if (res.result && res.result.code === 0) {
+          const questions = (res.result.questions || []).map(q => ({
+            ...q,
+            categoryLabel: getCategoryLabel(q.category?.[0] || '', lang),
+          }));
+          this.setData({ questions, loading: false });
+        } else {
+          this.setData({ loading: false });
+        }
+      },
+      fail: err => {
+        console.error('getErrorBook failed:', err);
+        this.setData({ loading: false });
+      },
+    });
   },
 
   onQuestionTap(e) {
@@ -78,6 +61,7 @@ Page({
             showToast('已移除');
             this.setData({ questions: this.data.questions.filter(q => q._id !== id) });
           },
+          fail: () => showToast('移除失败，请重试'),
         });
       },
     });
@@ -88,13 +72,29 @@ Page({
     wx.showModal({
       title: '清空错题本',
       content: '确定清空所有错题记录吗？',
-      success: async res => {
+      success: res => {
         if (!res.confirm) return;
-        const db = wx.cloud.database();
-        const ebRes = await db.collection('error_book').get();
-        await Promise.all(ebRes.data.map(e => db.collection('error_book').doc(e._id).remove()));
-        this.setData({ questions: [] });
-        showToast('🎉 错题本已清空！', 'success');
+        wx.showLoading({ title: '清空中…', mask: true });
+        wx.cloud.callFunction({
+          name: 'clearErrorBook',
+          data: {},
+          success: result => {
+            wx.hideLoading();
+            const { removed = 0, failed = 0 } = result.result || {};
+            if (failed > 0) {
+              showToast(`已清空 ${removed} 条，${failed} 条清除失败`);
+              // Reload to accurately reflect what remains in the DB
+              this._loadErrorBook();
+            } else {
+              showToast('🎉 错题本已清空！', 'success');
+              this.setData({ questions: [] });
+            }
+          },
+          fail: () => {
+            wx.hideLoading();
+            showToast('清空失败，请重试');
+          },
+        });
       },
     });
   },
@@ -103,5 +103,12 @@ Page({
     const lang = this.data.language === 'cn' ? 'en' : 'cn';
     app.switchLanguage(lang);
     this.setData({ language: lang });
+    // Re-map category labels for the new language
+    const questions = this.data.questions.map(q => ({
+      ...q,
+      categoryLabel: getCategoryLabel(q.category?.[0] || '', lang),
+    }));
+    this.setData({ questions });
   },
 });
+

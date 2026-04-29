@@ -1,6 +1,6 @@
 // pages/question-bank/question-bank.js
 const app = getApp();
-const { getCategoryLabel, CATEGORY_LABELS } = require('../../utils/util');
+const { getCategoryLabel, CATEGORY_LABELS, getDifficultyLabel } = require('../../utils/util');
 
 const YEARS = [];
 for (let y = 2023; y >= 2000; y--) YEARS.push(y);
@@ -35,7 +35,15 @@ Page({
   },
 
   onShow() {
-    this.setData({ language: app.globalData.language });
+    const lang = app.globalData.language;
+    if (lang !== this.data.language) {
+      // Language was changed in another tab; re-map existing category labels
+      const questions = this.data.questions.map(q => ({
+        ...q,
+        categoryLabels: (q.category || []).map(c => getCategoryLabel(c, lang)),
+      }));
+      this.setData({ language: lang, questions });
+    }
   },
 
   _loadQuestions(reset = false) {
@@ -54,8 +62,14 @@ Page({
         pageSize: this.data.pageSize,
       },
       success: res => {
+        const lang = this.data.language;
         const { questions = [], total } = res.result;
-        const list = reset ? questions : [...this.data.questions, ...questions];
+        const mapped = questions.map(q => ({
+          ...q,
+          categoryLabels: (q.category || []).map(c => getCategoryLabel(c, lang)),
+          difficultyLabel: getDifficultyLabel(q.difficulty),
+        }));
+        const list = reset ? mapped : [...this.data.questions, ...mapped];
         this.setData({
           questions: list,
           loading: false,
@@ -67,6 +81,9 @@ Page({
         console.error('getQuestions failed:', err);
         this.setData({ loading: false });
         wx.showToast({ title: '加载失败，请重试', icon: 'none' });
+      },
+      complete: () => {
+        wx.stopPullDownRefresh();
       },
     });
   },
@@ -91,7 +108,12 @@ Page({
   onLangToggle() {
     const lang = this.data.language === 'cn' ? 'en' : 'cn';
     app.switchLanguage(lang);
-    this.setData({ language: lang });
+    // Re-map category labels for the new language
+    const questions = this.data.questions.map(q => ({
+      ...q,
+      categoryLabels: (q.category || []).map(c => getCategoryLabel(c, lang)),
+    }));
+    this.setData({ language: lang, questions });
   },
 
   onReachBottom() {
@@ -99,7 +121,13 @@ Page({
   },
 
   onPullDownRefresh() {
+    // Ensure the spinner is always stopped, even if _loadQuestions returns early
+    // (e.g. when loading is already in progress and the call is a no-op).
+    if (this.data.loading) {
+      wx.stopPullDownRefresh();
+      return;
+    }
     this._loadQuestions(true);
-    wx.stopPullDownRefresh();
+    // stopPullDownRefresh is also called in _loadQuestions complete callback for the normal path
   },
 });

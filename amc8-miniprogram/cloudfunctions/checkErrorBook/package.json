@@ -1,0 +1,9 @@
+{
+  "name": "checkErrorBook",
+  "version": "1.0.0",
+  "description": "Check if a specific question is in the current user's error book",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

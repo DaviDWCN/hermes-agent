@@ -276,6 +276,8 @@ view, text, image {
 
 .scroll-x::-webkit-scrollbar { display: none; }
 
+.mt-32 { margin-top: 32rpx; }
+
 /* ---- Safe area ---- */
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);

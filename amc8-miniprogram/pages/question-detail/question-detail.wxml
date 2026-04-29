@@ -18,10 +18,10 @@
   <!-- Question Content -->
   <view class="card question-card mx-24">
     <view class="flex-start gap-8 mb-16">
-      <text class="tag tag-accent" wx:for="{{question.category}}" wx:for-item="cat" wx:key="*this">
-        {{cat}}
+      <text class="tag tag-accent" wx:for="{{question.categoryLabels}}" wx:for-item="label" wx:key="*this">
+        {{label}}
       </text>
-      <text class="difficulty">难度：{{question.difficulty}}★</text>
+      <text class="difficulty">难度：{{question.difficultyLabel}}</text>
     </view>
 
     <!-- LaTeX / text content (rendered by towxml in production) -->
