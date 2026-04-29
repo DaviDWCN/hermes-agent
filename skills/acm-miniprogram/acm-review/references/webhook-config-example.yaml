@@ -1,0 +1,112 @@
+# Webhook 配置示例 — GitHub PR 事件触发 AMC Review
+
+将以下配置添加到 `~/.hermes/config.yaml` 的 `platforms.webhook.extra.routes` 节点下，
+让 Hermes Gateway 在收到 GitHub Pull Request 事件时自动触发 AMC 8 小程序 Review。
+
+---
+
+## config.yaml 配置片段
+
+```yaml
+gateway:
+  platforms:
+    webhook:
+      enabled: true
+      extra:
+        host: "0.0.0.0"
+        port: 8644                  # Webhook 监听端口
+        routes:
+          acm_pr_review:
+            # 仅处理 pull_request 事件（opened / synchronize / reopened）
+            events: ["pull_request"]
+            # GitHub Webhook Secret（在 GitHub 仓库设置中配置同一个值）
+            secret: "${GITHUB_WEBHOOK_SECRET}"
+            # 触发时使用的技能
+            skills: ["acm-review"]
+            # 发送给 Agent 的提示词模板（支持 {payload.*} 占位符）
+            prompt: |
+              GitHub PR 事件触发了 AMC 8 小程序 Review。
+              
+              PR 信息：
+              - 编号：#{payload.number}
+              - 标题：{payload.pull_request.title}
+              - 作者：@{payload.pull_request.user.login}
+              - 分支：{payload.pull_request.head.ref} → {payload.pull_request.base.ref}
+              - 变更文件数：{payload.pull_request.changed_files}
+              - 链接：{payload.pull_request.html_url}
+              
+              请按照 acm-review 技能的工作流程，对此 PR 中涉及 amc8-miniprogram/ 目录的
+              变更进行完整 Code Review，并将结果作为 PR Review 评论提交到 GitHub。
+              PR 编号为 {payload.number}，请在脚本中使用此编号。
+            # Review 结果以 PR comment 形式回写 GitHub
+            deliver: github_comment
+            deliver_extra:
+              repo: "your-org/your-repo"   # 替换为实际仓库（格式：owner/repo）
+              pr_number_field: "payload.number"
+
+          acm_push_review:
+            # Push 到 main 分支时触发全量 Review（可选，频率较高，谨慎开启）
+            events: ["push"]
+            secret: "${GITHUB_WEBHOOK_SECRET}"
+            skills: ["acm-review"]
+            prompt: |
+              Push 事件触发了 AMC 8 小程序定期 Review。
+              
+              提交信息：
+              - 推送者：{payload.pusher.name}
+              - 分支：{payload.ref}
+              - 最新 commit：{payload.head_commit.id}
+              - commit 消息：{payload.head_commit.message}
+              
+              请对 amc8-miniprogram/ 目录执行增量 Code Review（仅审查本次 push 涉及的文件），
+              完成后创建 GitHub Issue 追踪发现的问题。
+            deliver: github_issue
+            deliver_extra:
+              repo: "your-org/your-repo"   # 替换为实际仓库（格式：owner/repo）
+              issue_labels: ["code-review", "automated", "acm-miniprogram"]
+```
+
+---
+
+## GitHub 仓库 Webhook 配置步骤
+
+1. 进入 GitHub 仓库 → **Settings** → **Webhooks** → **Add webhook**
+2. 填写：
+   - **Payload URL**: `http://your-server-ip:8644/webhook`（替换为实际服务器地址）
+   - **Content type**: `application/json`
+   - **Secret**: 与 `config.yaml` 中 `secret` 字段的值完全一致
+   - **Which events**: 勾选 `Pull requests` 和 `Pushes`
+3. 点击 **Add webhook**
+
+---
+
+## 环境变量配置
+
+在 `~/.hermes/.env` 中添加：
+
+```bash
+# GitHub Webhook 签名验证密钥（自行生成一个随机字符串）
+GITHUB_WEBHOOK_SECRET=your_random_secret_here
+
+# GitHub 访问令牌（用于回写 PR Comment / Issue）
+GITHUB_TOKEN=ghp_your_token_here
+```
+
+---
+
+## 启动 Gateway
+
+```bash
+hermes gateway start
+```
+
+Gateway 启动后，Webhook 服务器会在配置的端口上监听。
+每次 GitHub 触发 PR/Push 事件时，Hermes Agent 会自动运行 ACM Review 并将结果写回 GitHub。
+
+---
+
+## 安全注意事项
+
+- `secret` 字段**必须**设置为随机字符串（不少于 32 字节），切勿使用 `INSECURE_NO_AUTH`。
+- 不要将 `GITHUB_WEBHOOK_SECRET` 和 `GITHUB_TOKEN` 写入代码库，仅存放在 `~/.hermes/.env`。
+- 如服务器在防火墙后，需开放 Webhook 端口（默认 8644），或使用 ngrok 等隧道工具进行本地测试。
