@@ -35,7 +35,15 @@ Page({
   },
 
   onShow() {
-    this.setData({ language: app.globalData.language });
+    const lang = app.globalData.language;
+    if (lang !== this.data.language) {
+      // Language was changed in another tab; re-map existing category labels
+      const questions = this.data.questions.map(q => ({
+        ...q,
+        categoryLabels: (q.category || []).map(c => getCategoryLabel(c, lang)),
+      }));
+      this.setData({ language: lang, questions });
+    }
   },
 
   _loadQuestions(reset = false) {

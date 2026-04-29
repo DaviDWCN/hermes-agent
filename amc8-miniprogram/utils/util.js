@@ -58,16 +58,27 @@ function getDifficultyLabel(d) {
 /**
  * Utility: format relative timestamp (e.g. "3分钟前").
  */
-function timeAgo(isoString) {
-  if (!isoString) return '';
+function timeAgo(value) {
+  if (!value) return '';
   const now = Date.now();
-  const then = new Date(isoString).getTime();
+  // Cloud DB returns Timestamp objects (with a .toDate() method) or Date objects or ISO strings
+  let then;
+  if (typeof value === 'string') {
+    then = new Date(value).getTime();
+  } else if (value instanceof Date) {
+    then = value.getTime();
+  } else if (value && typeof value.toDate === 'function') {
+    then = value.toDate().getTime();
+  } else {
+    then = Number(value);
+  }
+  if (!then || isNaN(then)) return '';
   const diff = Math.floor((now - then) / 1000);
   if (diff < 60) return '刚刚';
   if (diff < 3600) return `${Math.floor(diff / 60)}分钟前`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}小时前`;
   if (diff < 2592000) return `${Math.floor(diff / 86400)}天前`;
-  return new Date(isoString).toLocaleDateString('zh-CN');
+  return new Date(then).toLocaleDateString('zh-CN');
 }
 
 /**

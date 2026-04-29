@@ -23,6 +23,7 @@ Page({
     submitting: false,
     textLength: 0,
     MAX_TEXT: 2000,
+    maxImages: MAX_IMAGES,
 
     // Math toolbar shortcuts
     mathShortcuts: [
@@ -109,7 +110,10 @@ Page({
       // Upload images first
       const uploadedUrls = [];
       for (const localPath of imgList) {
-        const ext = localPath.split('.').pop() || 'jpg';
+        // Extract extension from local temp path, ignoring any query string
+        const basename = localPath.split('/').pop().split('?')[0];
+        const dotIdx = basename.lastIndexOf('.');
+        const ext = dotIdx !== -1 ? basename.slice(dotIdx + 1).toLowerCase() || 'jpg' : 'jpg';
         const cloudPath = `solutions/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
         const uploadRes = await wx.cloud.uploadFile({ cloudPath, filePath: localPath });
         uploadedUrls.push(uploadRes.fileID);

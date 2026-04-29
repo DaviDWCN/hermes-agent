@@ -73,7 +73,7 @@
         <image src="{{img}}" mode="aspectFill" class="uploaded-img"/>
         <view class="img-remove" data-idx="{{index}}" bindtap="onRemoveImage">✕</view>
       </view>
-      <view class="img-add" bindtap="onChooseImage" wx:if="{{imgList.length < 3}}">
+      <view class="img-add" bindtap="onChooseImage" wx:if="{{imgList.length < maxImages}}">
         <text class="img-add-icon">+</text>
         <text class="img-add-label">添加图片</text>
       </view>
