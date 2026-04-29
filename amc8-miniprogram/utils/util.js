@@ -51,8 +51,8 @@ function getCategoryLabel(cat, lang = 'cn') {
  * Utility: return difficulty label (1-5 scale).
  */
 function getDifficultyLabel(d) {
-  const stars = '★'.repeat(d) + '☆'.repeat(5 - d);
-  return stars;
+  const clamped = Math.min(5, Math.max(0, Math.round(d) || 0));
+  return '★'.repeat(clamped) + '☆'.repeat(5 - clamped);
 }
 
 /**

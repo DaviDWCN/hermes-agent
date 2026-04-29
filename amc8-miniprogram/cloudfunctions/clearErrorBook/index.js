@@ -15,9 +15,10 @@ exports.main = async (event, context) => {
 
   let totalRemoved = 0;
   let totalFailed = 0;
+  const MAX_ITERATIONS = 50; // safety cap: 50 × 100 = 5000 entries max
 
   // Loop until no more records remain (handles >100 entries)
-  while (true) { // eslint-disable-line no-constant-condition
+  for (let i = 0; i < MAX_ITERATIONS; i++) {
     const res = await db.collection('error_book')
       .where({ openid })
       .limit(PAGE_LIMIT)
@@ -34,6 +35,10 @@ exports.main = async (event, context) => {
 
     // If some deletes failed, stop to avoid an infinite loop on stuck records
     if (totalFailed > 0) break;
+
+    if (i === MAX_ITERATIONS - 1) {
+      console.warn('clearErrorBook: reached safety iteration limit; some records may remain');
+    }
   }
 
   return { code: 0, removed: totalRemoved, failed: totalFailed };

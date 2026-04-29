@@ -1,6 +1,6 @@
 // pages/question-detail/question-detail.js
 const app = getApp();
-const { getCategoryLabel, getMethodLabel, timeAgo, vibrateCorrect, vibrateWrong, showToast } = require('../../utils/util');
+const { getCategoryLabel, getMethodLabel, getDifficultyLabel, timeAgo, vibrateCorrect, vibrateWrong, showToast } = require('../../utils/util');
 
 Page({
   data: {
@@ -52,7 +52,7 @@ Page({
         const enriched = {
           ...q,
           categoryLabels: (q.category || []).map(c => getCategoryLabel(c, lang)),
-          difficultyLabel: '★'.repeat(Math.min(5, q.difficulty || 0)) + '☆'.repeat(Math.max(0, 5 - (q.difficulty || 0))),
+          difficultyLabel: getDifficultyLabel(q.difficulty),
         };
         this.setData({ question: enriched, loading: false });
         wx.setNavigationBarTitle({ title: `${q.year} AMC 8 #${q.problem_number}` });
@@ -82,6 +82,7 @@ Page({
       .then(res => {
         const incoming = res.data.map(s => ({
           ...s,
+          img_list: s.img_list || [],
           timeLabel: timeAgo(s.created_at),
           methodLabel: getMethodLabel(s.method_tag),
         }));
@@ -162,8 +163,12 @@ Page({
       name: 'voteSolution',
       data: { solutionId },
       success: res => {
+        if (!res.result || res.result.code !== 0) {
+          showToast('点赞失败，请重试');
+          return;
+        }
         const { action } = res.result;
-        // Update local vote count optimistically
+        // Apply optimistic update only on confirmed success
         const solutions = this.data.solutions.map(s => {
           if (s._id === solutionId) {
             return {

@@ -1,6 +1,6 @@
 // pages/question-bank/question-bank.js
 const app = getApp();
-const { getCategoryLabel, CATEGORY_LABELS } = require('../../utils/util');
+const { getCategoryLabel, CATEGORY_LABELS, getDifficultyLabel } = require('../../utils/util');
 
 const YEARS = [];
 for (let y = 2023; y >= 2000; y--) YEARS.push(y);
@@ -67,7 +67,7 @@ Page({
         const mapped = questions.map(q => ({
           ...q,
           categoryLabels: (q.category || []).map(c => getCategoryLabel(c, lang)),
-          difficultyLabel: '★'.repeat(Math.min(5, q.difficulty || 0)) + '☆'.repeat(Math.max(0, 5 - (q.difficulty || 0))),
+          difficultyLabel: getDifficultyLabel(q.difficulty),
         }));
         const list = reset ? mapped : [...this.data.questions, ...mapped];
         this.setData({
@@ -121,7 +121,13 @@ Page({
   },
 
   onPullDownRefresh() {
+    // Ensure the spinner is always stopped, even if _loadQuestions returns early
+    // (e.g. when loading is already in progress and the call is a no-op).
+    if (this.data.loading) {
+      wx.stopPullDownRefresh();
+      return;
+    }
     this._loadQuestions(true);
-    // stopPullDownRefresh is called in _loadQuestions complete callback
+    // stopPullDownRefresh is also called in _loadQuestions complete callback for the normal path
   },
 });

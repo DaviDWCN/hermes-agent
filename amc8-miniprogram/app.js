@@ -12,6 +12,16 @@ App({
       traceUser: true,
     });
 
+    // Restore language preference from local storage
+    try {
+      const saved = wx.getStorageSync('lang');
+      if (saved === 'en' || saved === 'cn') {
+        this.globalData.language = saved;
+      }
+    } catch (e) {
+      console.warn('Failed to restore language preference:', e);
+    }
+
     this._initUserSession();
   },
 
@@ -46,9 +56,10 @@ App({
     selectedCategory: null,
   },
 
-  // Helper: switch language globally and broadcast event
+  // Helper: switch language globally and persist to storage
   switchLanguage(lang) {
     this.globalData.language = lang;
+    try { wx.setStorageSync('lang', lang); } catch (_) {}
     // Pages listen to this via onShow or custom event bus
   },
 });

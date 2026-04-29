@@ -106,9 +106,9 @@ Page({
     this.setData({ submitting: true });
     wx.showLoading({ title: '提交中…', mask: true });
 
+    const uploadedUrls = [];
     try {
-      // Upload images first
-      const uploadedUrls = [];
+      // Upload images first — track uploaded fileIDs so we can clean up on failure
       for (const localPath of imgList) {
         // Extract extension from local temp path, ignoring any query string
         const basename = localPath.split('/').pop().split('?')[0];
@@ -144,14 +144,30 @@ Page({
         showToast('🎉 提交成功！', 'success', 2000);
         setTimeout(() => wx.navigateBack(), 1800);
       } else {
+        // Cloud function rejected the submission — clean up orphaned uploads
+        this._cleanupUploads(uploadedUrls);
         showToast(res.result.message || '提交失败');
       }
     } catch (err) {
       wx.hideLoading();
+      // Clean up any images that were successfully uploaded before the error
+      if (uploadedUrls.length > 0) this._cleanupUploads(uploadedUrls);
       showToast('提交失败，请重试');
       console.error(err);
     } finally {
       this.setData({ submitting: false });
     }
+  },
+
+  _cleanupUploads(fileIDs) {
+    if (!fileIDs || fileIDs.length === 0) return;
+    const validIds = fileIDs.filter(id => typeof id === 'string' && id.length > 0);
+    if (validIds.length === 0) return;
+    try {
+      wx.cloud.deleteFile({ fileList: validIds, fail: err => console.warn('cleanup upload failed:', err) });
+    } catch (e) {
+      console.warn('cleanupUploads: deleteFile call failed:', e);
+    }
+  },
   },
 });

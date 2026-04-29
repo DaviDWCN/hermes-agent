@@ -16,16 +16,16 @@ exports.main = async (event, context) => {
     return { code: 400, message: '缺少或无效的 solutionId' };
   }
 
-  // Compound document ID ensures uniqueness without a secondary query
-  const voteDocId = `${openid}_${solutionId}`;
+  // Compound document ID ensures uniqueness; .add() with a pre-defined _id throws
+  // DUPLICATE_KEY when the record already exists, letting us toggle off reliably.
+  const voteDocId  = `${openid}_${solutionId}`;
   const votesCol  = db.collection('votes');
   const solutionRef = db.collection('user_solutions').doc(solutionId);
 
   try {
-    // Attempt to create the vote record; throws if it already exists
-    await votesCol.doc(voteDocId).set({
-      data: { solution_id: solutionId, openid, created_at: new Date() },
-      // `set` is idempotent but we use the existence check below to toggle
+    // Attempt to add with a compound _id; throws DUPLICATE_KEY if record exists
+    await votesCol.add({
+      data: { _id: voteDocId, solution_id: solutionId, openid, created_at: new Date() },
     });
     // Record was missing → new vote
     await solutionRef.update({ data: { vote_count: _.inc(1) } });
