@@ -51,11 +51,11 @@
       <view class="q-header flex-between">
         <view class="flex-start gap-8">
           <text class="q-year-num">{{item.year}} #{{item.problem_number}}</text>
-          <text class="tag tag-primary" wx:for="{{item.category}}" wx:for-item="cat" wx:key="*this">
-            {{cat}}
+          <text class="tag tag-primary" wx:for="{{item.categoryLabels}}" wx:for-item="label" wx:key="*this">
+            {{label}}
           </text>
         </view>
-        <view class="difficulty-stars">{{item.difficulty}}★</view>
+        <view class="difficulty-stars">{{item.difficultyLabel}}</view>
       </view>
       <!-- Content preview -->
       <view class="q-preview math-content">

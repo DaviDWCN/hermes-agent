@@ -41,8 +41,20 @@ Page({
       name: 'getQuestions',
       data: { questionId: id },
       success: res => {
-        const q = res.result.question;
-        this.setData({ question: q, loading: false });
+        const q = res.result && res.result.question;
+        if (!q) {
+          this.setData({ loading: false });
+          wx.showToast({ title: '题目不存在', icon: 'none' });
+          setTimeout(() => wx.navigateBack(), 1500);
+          return;
+        }
+        const lang = this.data.language;
+        const enriched = {
+          ...q,
+          categoryLabels: (q.category || []).map(c => getCategoryLabel(c, lang)),
+          difficultyLabel: '★'.repeat(Math.min(5, q.difficulty || 0)) + '☆'.repeat(Math.max(0, 5 - (q.difficulty || 0))),
+        };
+        this.setData({ question: enriched, loading: false });
         wx.setNavigationBarTitle({ title: `${q.year} AMC 8 #${q.problem_number}` });
         this._loadSolutions(true);
       },

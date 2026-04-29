@@ -82,11 +82,13 @@ Page({
             wx.hideLoading();
             const { removed = 0, failed = 0 } = result.result || {};
             if (failed > 0) {
-              showToast(`已清空 ${removed} 条，${failed} 条失败，请重试`);
+              showToast(`已清空 ${removed} 条，${failed} 条清除失败`);
+              // Reload to accurately reflect what remains in the DB
+              this._loadErrorBook();
             } else {
               showToast('🎉 错题本已清空！', 'success');
+              this.setData({ questions: [] });
             }
-            this.setData({ questions: [] });
           },
           fail: () => {
             wx.hideLoading();

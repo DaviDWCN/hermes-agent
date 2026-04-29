@@ -30,8 +30,16 @@ exports.main = async (event) => {
     if (typeof questionId !== 'string' || questionId.length > 64) {
       return { code: 400, message: '无效的 questionId' };
     }
-    const res = await db.collection('questions').doc(questionId).get();
-    return { code: 0, question: res.data };
+    try {
+      const res = await db.collection('questions').doc(questionId).get();
+      return { code: 0, question: res.data };
+    } catch (err) {
+      // Cloud DB throws when document does not exist (errCode -502001)
+      const notFound = err && (err.errCode === -502001 || (err.message || '').includes('not exist'));
+      return notFound
+        ? { code: 404, message: '题目不存在' }
+        : { code: 500, message: '查询失败，请重试' };
+    }
   }
 
   // Validate optional filter parameters

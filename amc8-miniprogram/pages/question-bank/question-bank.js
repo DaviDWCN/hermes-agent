@@ -54,8 +54,14 @@ Page({
         pageSize: this.data.pageSize,
       },
       success: res => {
+        const lang = this.data.language;
         const { questions = [], total } = res.result;
-        const list = reset ? questions : [...this.data.questions, ...questions];
+        const mapped = questions.map(q => ({
+          ...q,
+          categoryLabels: (q.category || []).map(c => getCategoryLabel(c, lang)),
+          difficultyLabel: '★'.repeat(Math.min(5, q.difficulty || 0)) + '☆'.repeat(Math.max(0, 5 - (q.difficulty || 0))),
+        }));
+        const list = reset ? mapped : [...this.data.questions, ...mapped];
         this.setData({
           questions: list,
           loading: false,
@@ -94,7 +100,12 @@ Page({
   onLangToggle() {
     const lang = this.data.language === 'cn' ? 'en' : 'cn';
     app.switchLanguage(lang);
-    this.setData({ language: lang });
+    // Re-map category labels for the new language
+    const questions = this.data.questions.map(q => ({
+      ...q,
+      categoryLabels: (q.category || []).map(c => getCategoryLabel(c, lang)),
+    }));
+    this.setData({ language: lang, questions });
   },
 
   onReachBottom() {

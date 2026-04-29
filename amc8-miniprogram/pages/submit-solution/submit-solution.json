@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "分享解题思路",
-  "usingComponents": {}
+  "usingComponents": {
+    "math-toolbar": "../../components/math-toolbar/math-toolbar"
+  }
 }

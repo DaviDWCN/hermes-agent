@@ -38,9 +38,10 @@ exports.main = async (event, context) => {
   if (!Array.isArray(imgList) || imgList.length > MAX_IMAGES) {
     return { code: 400, message: `最多上传 ${MAX_IMAGES} 张图片` };
   }
-  // Validate that all image entries are cloud storage fileIDs
+  // Validate that all image entries are cloud storage fileIDs (format: cloud://env.xxx/path)
+  const CLOUD_FILEID_RE = /^cloud:\/\/[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\//;
   for (const fileId of imgList) {
-    if (typeof fileId !== 'string' || !fileId.startsWith('cloud://') || fileId.length > 256) {
+    if (typeof fileId !== 'string' || !CLOUD_FILEID_RE.test(fileId) || fileId.length > 256) {
       return { code: 400, message: '图片链接格式无效' };
     }
   }
